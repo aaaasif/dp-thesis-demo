@@ -1,1 +1,41 @@
- 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply font-sans text-slate-800 antialiased bg-brand-mist;
+}
+
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-brand-teal;
+}
+
+/* Math blocks (no KaTeX dep; styled <pre>) */
+.math-block {
+  @apply bg-slate-50 border border-slate-200 rounded-lg p-4 font-mono text-sm overflow-x-auto whitespace-pre;
+  line-height: 1.6;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar        { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb  { @apply bg-slate-300 rounded; }
+::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
+
+/* Range slider polish */
+input[type="range"] {
+  @apply h-2 rounded-full bg-slate-200;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  @apply w-4 h-4 rounded-full bg-brand-teal shadow;
+}
+
+/* sr-only helpers already provided by Tailwind */
