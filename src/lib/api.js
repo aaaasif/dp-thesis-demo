@@ -1,9 +1,8 @@
 import axios from 'axios'
 
-// Empty baseURL = use Vite proxy in dev. Override via VITE_API_BASE in prod.
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE || '',
-  timeout: 8000,
+  timeout: 15000,
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -21,6 +20,8 @@ client.interceptors.response.use(
   }
 )
 
+const BASE = import.meta.env.VITE_API_BASE || ''
+
 export const api = {
   health:    ()         => client.get('/api/health').then(r => r.data),
   datasets:  ()         => client.get('/api/datasets').then(r => r.data),
@@ -28,5 +29,20 @@ export const api = {
   clipping:  ()         => client.get('/api/results/clipping').then(r => r.data),
   confusion: (dataset, epsilon) =>
     client.get('/api/confusion', { params: { dataset, epsilon } }).then(r => r.data),
-  predict:   (body)     => client.post('/api/predict', body).then(r => r.data)
+  predict:   (body)     => client.post('/api/predict', body).then(r => r.data),
+  samplesIndex: (dataset) =>
+    client.get(`/api/samples/${dataset}`).then(r => r.data),
+  /** Direct URL for an <img src=...> tag — backend serves the PNG. */
+  sampleUrl: (dataset, classIdx, sampleIdx) =>
+    `${BASE}/api/sample/${dataset}/${classIdx}/${sampleIdx}.png`,
+  upload: (file, dataset, epsilon) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('dataset', dataset)
+    if (epsilon !== null && epsilon !== undefined) fd.append('epsilon', String(epsilon))
+    return client.post('/api/upload', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 30000
+    }).then(r => r.data)
+  }
 }
